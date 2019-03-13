@@ -3,7 +3,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://BigdataGit.github.io/post/creating-a-new-theme/</loc>
+    <loc>https://BigdataGit.github.io/post/historyserver-ha/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://BigdataGit.github.io/post/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/</loc>
     <lastmod>2019-01-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -23,7 +30,28 @@
   </url>
   
   <url>
+    <loc>https://BigdataGit.github.io/categories/hadoop/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://BigdataGit.github.io/categories/java/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://BigdataGit.github.io/tags/job-historyserver/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://BigdataGit.github.io/tags/nginx/</loc>
     <lastmod>2019-01-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
@@ -38,6 +66,14 @@
   
   <url>
     <loc>https://BigdataGit.github.io/tags/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://BigdataGit.github.io/tags/yarn/</loc>
+    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>

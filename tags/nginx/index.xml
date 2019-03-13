@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nginx on Dylan-Big Data Technology Blogs</title>
+    <link>https://BigdataGit.github.io/tags/nginx/</link>
+    <description>Recent content in Nginx on Dylan-Big Data Technology Blogs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Dylan&amp;Sunny</copyright>
+    <lastBuildDate>Mon, 28 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://BigdataGit.github.io/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>HistoryServer HA</title>
+      <link>https://BigdataGit.github.io/post/historyserver-ha/</link>
+      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://BigdataGit.github.io/post/historyserver-ha/</guid>
+      <description>HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、</description>
+    </item>
+    
+  </channel>
+</rss>

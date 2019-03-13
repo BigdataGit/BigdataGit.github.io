@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>多线程 · Dylan-Big Data Technology Blogs</title>
+  <title>HistoryServer HA - Dylan-Big Data Technology Blogs</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,7 +23,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="Dylan" />
-  <meta name="description" content="This is dylan&#39;s first blogs." />
+  <meta name="description" content="HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、" />
+
 
 
 
@@ -33,8 +34,7 @@
 <meta name="generator" content="Hugo 0.49.2" />
 
 
-<link rel="canonical" href="https://BigdataGit.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" />
-<link href="https://BigdataGit.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.xml" rel="alternate" type="application/rss+xml" title="Dylan-Big Data Technology Blogs" />
+<link rel="canonical" href="https://BigdataGit.github.io/post/historyserver-ha/" />
 
 
 
@@ -56,18 +56,26 @@
 
 
 
-<meta property="og:title" content="多线程" />
-<meta property="og:description" content="This is dylan&#39;s first blogs." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://BigdataGit.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" />
-<meta property="og:updated_time" content="2019-01-28T00:00:00&#43;00:00"/>
+<meta property="og:title" content="HistoryServer HA" />
+<meta property="og:description" content="HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://BigdataGit.github.io/post/historyserver-ha/" /><meta property="article:published_time" content="2019-01-28T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-01-28T00:00:00&#43;00:00"/>
 
-<meta itemprop="name" content="多线程">
-<meta itemprop="description" content="This is dylan&#39;s first blogs.">
+<meta itemprop="name" content="HistoryServer HA">
+<meta itemprop="description" content="HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、">
 
+
+<meta itemprop="datePublished" content="2019-01-28T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-01-28T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1542">
+
+
+
+<meta itemprop="keywords" content="yarn,job historyserver,nginx," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="多线程"/>
-<meta name="twitter:description" content="This is dylan&#39;s first blogs."/>
+<meta name="twitter:title" content="HistoryServer HA"/>
+<meta name="twitter:description" content="HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -276,45 +284,250 @@
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
-          
-
-<section id="archive" class="archive">
-  
+          <article class="post bg-white">
     
-      <div class="archive-title tag">
-        <h2 class="archive-name">标签： 多线程</h2>
+    <header class="post-header">
+      <h1 class="post-title">HistoryServer HA</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-01-28" class="post-time">
+          2019-01-28
+        </time>
+        <div class="post-category">
+            <a href="https://BigdataGit.github.io/categories/hadoop/"> hadoop </a>
+            
+          </div>
+        
+
+        
+        
+
+        
+        
       </div>
+    </header>
+
     
-  
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#historyserver-ha">HistoryServer HA</a>
+<ul>
+<li><a href="#1-1-historyserver配置">1.1     HistoryServer配置</a>
+<ul>
+<li>
+<ul>
+<li><a href="#注意-此处ip和端口指定为nginx代理的域名和端口">注意:此处ip和端口指定为Nginx代理的域名和端口.</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#1-2-nginx代理配置">1.2     Nginx代理配置</a></li>
+<li><a href="#1-2-historyserver记录同步">1.2     HistoryServer记录同步</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
 
-  
-    <div class="archive-post">
-      <time datetime="2019-01-28" class="archive-post-time">
-        2019-01-28
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/" class="archive-post-link">
-          深入理解线程通信
-        </a>
-      </span>
+    
+    <div class="post-content">
+      
+
+<h2 id="historyserver-ha">HistoryServer HA</h2>
+
+<p>HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用.</p>
+
+<h3 id="1-1-historyserver配置">1.1     HistoryServer配置</h3>
+
+<p>1、在yarn-site.xml中添加以下配置:q!</p>
+
+<blockquote>
+<!--开启聚合日志-->
+
+<p><property>
+<name>yarn.log-aggregation-enable</name>
+<value>true</value>
+</property></p>
+</blockquote>
+
+<p>&lt;!—指定查询日志URL&gt;
+&gt;<property>
+<name> yarn.log.server.url </name>
+<value> <a href="http://ip:port/jobhistory/logs/">http://ip:port/jobhistory/logs/</a></value>
+</property></p>
+
+<h5 id="注意-此处ip和端口指定为nginx代理的域名和端口">注意:此处ip和端口指定为Nginx代理的域名和端口.</h5>
+
+<p>2、在mapred-site.xml 中添加</p>
+
+<!-- 设置jobhistoryserver 没有配置的话 history入口不可用 -->
+
+<blockquote>
+<p><property>
+<name>mapreduce.jobhistory.address</name>
+<value>IP:10020</value>
+</property></p>
+</blockquote>
+
+<!-- 配置web端口 -->
+
+<blockquote>
+<p><property>
+<name>mapreduce.jobhistory.webapp.address</name>
+<value>IP:19888</value>
+</property></p>
+</blockquote>
+
+<!-- 配置正在运行中的日志在hdfs上的存放路径 -->
+
+<blockquote>
+<p><property>
+<name>mapreduce.jobhistory.intermediate-done-dir</name>
+<value>/history/done_intermediate</value>
+</property></p>
+</blockquote>
+
+<!-- 配置运行过的日志存放在hdfs上的存放路径 -->
+
+<blockquote>
+<p><property>
+<name>mapreduce.jobhistory.done-dir</name>
+<value>/history/done</value>
+</property></p>
+</blockquote>
+
+<p>3、启动/停止historyserver</p>
+
+<p>启动： 在hadoop/sbin/目录下执行
+<code>./mr-jobhistory-daemon.sh start historyserver</code>
+停止：在hadoop/sbin/目录下执行
+<code>./mr-jobhistory-daemon.sh stop historyserver</code></p>
+
+<hr />
+
+<h3 id="1-2-nginx代理配置">1.2     Nginx代理配置</h3>
+
+<p>下载安装Nginx,此过程省略.</p>
+
+<p>1、配置Nginx反向代理HistoryServer,
+nginx.conf:</p>
+
+<pre><code>http {
+	··············
+upstream mysvr {
+#此处配置history的web ui代理
+        server ip1:19890 weight=5;
+        server ip2:19890 weight=5;
+  }
+ server {
+        listen       80;
+		#配置nginx代理域名
+        server_name  xxxxxx;
+        ·············
+		#加载上面http代理的配置
+        location / {
+            root   html;
+            index  index.html index.htm;
+            proxy_pass  http://mysvr;
+        }
+</code></pre>
+
+<p>2、配置完成后,重启nginx,指定加载配置文件.
+##启动、关闭
+<code>./sbin/nginx        #默认配置文件 conf/nginx.conf，-c 指定</code>
+<code>./sbin/nginx -s stop
+或 pkill nginx</code></p>
+
+<p>##重启，不会改变启动时指定的配置文件
+<code>./sbin/nginx -s reload</code></p>
+
+<hr />
+
+<h3 id="1-2-historyserver记录同步">1.2     HistoryServer记录同步</h3>
+
+<p>上面的服务配置完,成功启动.
+    这时会发现当提交任务执行完成结束之后,只有一个historyserver能够查看到之前提交,执行完成的历史记录。</p>
+
+<p><strong>原因如下：</strong></p>
+
+<pre><code>    当提交的任务执行结束之后，hadoop 会通过nginx找到一个historyserver来执行一系列动作（主要是把任务日志在hdfs做个迁移，从mapreduce.jobhistory.intermediate-done-dir 移动到mapreduce.jobhistory.done-dir中）。在移动之前会把相关任务的一些源信息加载到缓存cache中。而这个动作只有被nginx调用的指定historyserver才会做。
+
+    当在web ui展示job history时，会首先加载缓存cache中的job元信息，来读取job的历史记录详情。所有其他未被调用的historyserver节点cache中就没有其他节点执行job日志移动的任务信息。
+</code></pre>
+
+<p><strong>解决方案：</strong></p>
+
+<p>{{ % img src=&ldquo;/media/ha.jpg&rdquo; alt=&ldquo;ha&rdquo; %}}</p>
+
+<p>1、当history执行任务日志迁移完成后，把当前的job id和 clusterTimeStamp信息上传zookeeper，创建一个包含执行上传的HistoryServer主机host命名子节点。</p>
+
+<p>2、HistoryServer定时执行扫描HDFS日子目录，开始扫描前首先拉取zookeeper中其他HistoryServer创建的节点信息：如上图：包含两个HistoryServer节点H1和H2，H1上传任务信息创建子节点znode1，H2只拉取znode1的节点信息，H2创建子节点znode2，H1拉取znode2的节点信息。信息拉取完毕后删除相应子节点。</p>
+
+<p>3、HistoryServer拿到znode信息中的job id和clusterTimeStamp后，通过一系列操作拼接成jobId，然后根据JobId从HDFS获取历史job日志信息最后加载到Historyserver cache中。</p>
+
+<p><strong>执行</strong>：
+1、首先在Zookeeper中创建/history节点。
+2、更改逻辑后编译hadoop-mapreduce-project模块，打包。mvn clean package -DskipTests使用target中生成的：hadoop-mapreduce-client-hs-2.7.3.jar替换集群中所有的historyserver所在节点路径 /app/hadoop-2.7.3/share/hadoop/mapreduce下的同名依赖。然后重启historyserver即可</p>
+
+<p>代码后续上传</p>
+
     </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Dylan</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-01-28</span>
+  </p>
   
-</section>
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
 
 
+    
+    
 
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://BigdataGit.github.io/tags/yarn/">yarn</a>
+          <a href="https://BigdataGit.github.io/tags/job-historyserver/">job historyserver</a>
+          <a href="https://BigdataGit.github.io/tags/nginx/">nginx</a>
+          
+        </div>
 
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/">
+            <span class="next-text nav-default">深入理解线程通信</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
 
-
-  
-  
-  
-
-  
-  
-
-  
-  
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
 
   
   
@@ -322,7 +535,36 @@
   
   
 
+  
+  
 
+  
+
+  <div class="post bg-white">
+      <div id="comments-gitment"></div>
+      <link rel="stylesheet" href="/lib/gitment/gitment-0.0.3.min.css">
+        <script src="/lib/gitment/gitment-0.0.3.min.js"></script>
+      <script type="text/javascript">
+      const gitment = new Gitment({
+        id: 'HistoryServer HA.md',
+        title: 'HistoryServer HA',
+        link: decodeURI(location.href),
+        desc: 'HistoryServer HA HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用. 1.1 HistoryServer配置 1、',
+        owner: 'BigdataGit',
+        repo: 'BlogsComments',
+        oauth: {
+          client_id: '318bec8c1d64e4938808',
+          client_secret: '8ac8ec759c60f2d8decf426746ba0d61c8e57a8e'
+        }
+      })
+      gitment.render('comments-gitment')
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://github.com/imsun/gitment">comments powered by gitment.</a></noscript>
+    </div>
+
+  
+  
+    
 
 
 

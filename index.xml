@@ -13,11 +13,161 @@
     
     
     <item>
-      <title>深入理解线程通信</title>
-      <link>https://BigdataGit.github.io/post/creating-a-new-theme/</link>
+      <title>HistoryServer HA</title>
+      <link>https://BigdataGit.github.io/post/historyserver-ha/</link>
       <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://BigdataGit.github.io/post/creating-a-new-theme/</guid>
+      <guid>https://BigdataGit.github.io/post/historyserver-ha/</guid>
+      
+        <description>
+
+&lt;h2 id=&#34;historyserver-ha&#34;&gt;HistoryServer HA&lt;/h2&gt;
+
+&lt;p&gt;HA配置方案:通过Nginx反向代理HistoryServer实现HistoryServer高可用.&lt;/p&gt;
+
+&lt;h3 id=&#34;1-1-historyserver配置&#34;&gt;1.1     HistoryServer配置&lt;/h3&gt;
+
+&lt;p&gt;1、在yarn-site.xml中添加以下配置:q!&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;!--开启聚合日志--&gt;
+
+&lt;p&gt;&lt;property&gt;
+&lt;name&gt;yarn.log-aggregation-enable&lt;/name&gt;
+&lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&amp;lt;!—指定查询日志URL&amp;gt;
+&amp;gt;&lt;property&gt;
+&lt;name&gt; yarn.log.server.url &lt;/name&gt;
+&lt;value&gt; &lt;a href=&#34;http://ip:port/jobhistory/logs/&#34;&gt;http://ip:port/jobhistory/logs/&lt;/a&gt;&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;注意-此处ip和端口指定为nginx代理的域名和端口&#34;&gt;注意:此处ip和端口指定为Nginx代理的域名和端口.&lt;/h5&gt;
+
+&lt;p&gt;2、在mapred-site.xml 中添加&lt;/p&gt;
+
+&lt;!-- 设置jobhistoryserver 没有配置的话 history入口不可用 --&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;property&gt;
+&lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;
+&lt;value&gt;IP:10020&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- 配置web端口 --&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;property&gt;
+&lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;
+&lt;value&gt;IP:19888&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- 配置正在运行中的日志在hdfs上的存放路径 --&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;property&gt;
+&lt;name&gt;mapreduce.jobhistory.intermediate-done-dir&lt;/name&gt;
+&lt;value&gt;/history/done_intermediate&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- 配置运行过的日志存放在hdfs上的存放路径 --&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;property&gt;
+&lt;name&gt;mapreduce.jobhistory.done-dir&lt;/name&gt;
+&lt;value&gt;/history/done&lt;/value&gt;
+&lt;/property&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;3、启动/停止historyserver&lt;/p&gt;
+
+&lt;p&gt;启动： 在hadoop/sbin/目录下执行
+&lt;code&gt;./mr-jobhistory-daemon.sh start historyserver&lt;/code&gt;
+停止：在hadoop/sbin/目录下执行
+&lt;code&gt;./mr-jobhistory-daemon.sh stop historyserver&lt;/code&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&#34;1-2-nginx代理配置&#34;&gt;1.2     Nginx代理配置&lt;/h3&gt;
+
+&lt;p&gt;下载安装Nginx,此过程省略.&lt;/p&gt;
+
+&lt;p&gt;1、配置Nginx反向代理HistoryServer,
+nginx.conf:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http {
+	··············
+upstream mysvr {
+#此处配置history的web ui代理
+        server ip1:19890 weight=5;
+        server ip2:19890 weight=5;
+  }
+ server {
+        listen       80;
+		#配置nginx代理域名
+        server_name  xxxxxx;
+        ·············
+		#加载上面http代理的配置
+        location / {
+            root   html;
+            index  index.html index.htm;
+            proxy_pass  http://mysvr;
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;2、配置完成后,重启nginx,指定加载配置文件.
+##启动、关闭
+&lt;code&gt;./sbin/nginx        #默认配置文件 conf/nginx.conf，-c 指定&lt;/code&gt;
+&lt;code&gt;./sbin/nginx -s stop
+或 pkill nginx&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;##重启，不会改变启动时指定的配置文件
+&lt;code&gt;./sbin/nginx -s reload&lt;/code&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&#34;1-2-historyserver记录同步&#34;&gt;1.2     HistoryServer记录同步&lt;/h3&gt;
+
+&lt;p&gt;上面的服务配置完,成功启动.
+    这时会发现当提交任务执行完成结束之后,只有一个historyserver能够查看到之前提交,执行完成的历史记录。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;原因如下：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    当提交的任务执行结束之后，hadoop 会通过nginx找到一个historyserver来执行一系列动作（主要是把任务日志在hdfs做个迁移，从mapreduce.jobhistory.intermediate-done-dir 移动到mapreduce.jobhistory.done-dir中）。在移动之前会把相关任务的一些源信息加载到缓存cache中。而这个动作只有被nginx调用的指定historyserver才会做。
+
+    当在web ui展示job history时，会首先加载缓存cache中的job元信息，来读取job的历史记录详情。所有其他未被调用的historyserver节点cache中就没有其他节点执行job日志移动的任务信息。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;解决方案：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;{{ % img src=&amp;ldquo;/media/ha.jpg&amp;rdquo; alt=&amp;ldquo;ha&amp;rdquo; %}}&lt;/p&gt;
+
+&lt;p&gt;1、当history执行任务日志迁移完成后，把当前的job id和 clusterTimeStamp信息上传zookeeper，创建一个包含执行上传的HistoryServer主机host命名子节点。&lt;/p&gt;
+
+&lt;p&gt;2、HistoryServer定时执行扫描HDFS日子目录，开始扫描前首先拉取zookeeper中其他HistoryServer创建的节点信息：如上图：包含两个HistoryServer节点H1和H2，H1上传任务信息创建子节点znode1，H2只拉取znode1的节点信息，H2创建子节点znode2，H1拉取znode2的节点信息。信息拉取完毕后删除相应子节点。&lt;/p&gt;
+
+&lt;p&gt;3、HistoryServer拿到znode信息中的job id和clusterTimeStamp后，通过一系列操作拼接成jobId，然后根据JobId从HDFS获取历史job日志信息最后加载到Historyserver cache中。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;执行&lt;/strong&gt;：
+1、首先在Zookeeper中创建/history节点。
+2、更改逻辑后编译hadoop-mapreduce-project模块，打包。mvn clean package -DskipTests使用target中生成的：hadoop-mapreduce-client-hs-2.7.3.jar替换集群中所有的historyserver所在节点路径 /app/hadoop-2.7.3/share/hadoop/mapreduce下的同名依赖。然后重启historyserver即可&lt;/p&gt;
+
+&lt;p&gt;代码后续上传&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>深入理解线程通信</title>
+      <link>https://BigdataGit.github.io/post/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/</link>
+      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://BigdataGit.github.io/post/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/</guid>
       
         <description>
 
