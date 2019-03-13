@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://BigdataGit.github.io/sitemap.xml
