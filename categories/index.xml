@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Jane - A super concise theme for Hugo</title>
+    <title>Categories on Dylan-Big Data Technology Blogs</title>
     <link>https://BigdataGit.github.io/categories/</link>
-    <description>Recent content in Categories on Jane - A super concise theme for Hugo</description>
+    <description>Recent content in Categories on Dylan-Big Data Technology Blogs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
+    <copyright>Dylan&amp;Sunny</copyright>
     
 	<atom:link href="https://BigdataGit.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
